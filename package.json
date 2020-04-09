@@ -1,0 +1,22 @@
+{
+  "name": "plataformabr-util-validator",
+  "version": "0.0.1",
+  "description": "Teste de publicação de módulo",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dpguerra/plataformabr-util-validator.git"
+  },
+  "keywords": [
+    "teste"
+  ],
+  "author": "Daniel Guerra",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dpguerra/plataformabr-util-validator/issues"
+  },
+  "homepage": "https://github.com/dpguerra/plataformabr-util-validator#readme"
+}
