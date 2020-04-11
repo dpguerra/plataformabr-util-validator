@@ -4,6 +4,7 @@ const { validatorUUID } = require('./UUID');
 const { nascimentoValido } = require('./Nascimento');
 const { tamanhoMinimo } = require('./Texto');
 const { sexoValido, SEXO } = require('./Sexo');
+const { incapacidadeValida, INCAPACIDADE } = require('./IncapacidadeLegal');
 const { identidadeGeneroValida } = require('./IdentidadeGenero');
 
 module.exports = {
@@ -14,5 +15,7 @@ module.exports = {
     tamanhoMinimo,
     sexoValido,
     SEXO,
+    incapacidadeValida,
+    INCAPACIDADE,
     identidadeGeneroValida
 };
