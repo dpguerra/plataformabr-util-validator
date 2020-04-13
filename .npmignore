@@ -1,0 +1,5 @@
+node_modules/
+spec/
+
+
+jest.config.js
