@@ -3,9 +3,8 @@ const SEXO = {
     FEMININO: 'Feminino'
 };
 
-const sexoValido = sexo => {
-    return Object.values(SEXO).includes(sexo);
-};
+const sexoValido = sexo =>
+    Object.values(SEXO).includes(sexo);
 
 module.exports = {
     SEXO,

@@ -5,9 +5,8 @@ const INCAPACIDADE = {
     DEPENDENTE: ['Dependente']
 };
 
-const incapacidadeValida = incapacidade => {
-    return Object.values(INCAPACIDADE).includes(incapacidade);
-};
+const incapacidadeValida = incapacidade => 
+    Object.values(INCAPACIDADE).includes(incapacidade);
 
 module.exports = {
     INCAPACIDADE,

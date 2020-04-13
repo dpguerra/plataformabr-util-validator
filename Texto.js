@@ -1,3 +1,2 @@
-exports.tamanhoMinimo = texto => {
-    return String(texto).length >= 3;
-};
+exports.tamanhoMinimo = texto =>
+    String(texto).length >= 3;
