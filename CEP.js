@@ -1,39 +1,35 @@
 const fetch = require('node-fetch');
+const compose = require('compose-function');
 
-/* Verifica se o CEP informado é longo demais ou um único dígito repetido. */
-const isBadSizedOrRepeated = input => {
-        
-    const regex = /^(\d)\1{7}/;
-    return input.length != 8 || regex.test(input);
-
+const url = cep => `https://viacep.com.br/ws/${cep}/json/`;                             /* Serviço externo para validação do CEP. */
+const options = {                                                                       /* Configuração para aciionamento do serviço. */
+    method: 'GET', 
+    mode: 'cors', 
+    headers: {
+        'content-type': 'application/json;charset=utf-8'
+    }
 };
 
+const isBadSizedOrRepeated = input =>                                                   /* Verifica o tamanho e composição do CEP informado. */
+    input.length != 8 || /^(\d)\1{7}/.test(input);
+
 /* Recupera e retorna o resto do endereço. */
-const isValid = cep => {
-
-    const url = `https://viacep.com.br/ws/${cep}/json/`;
-    const options = {
-        method: 'GET',
-        mode: 'cors',
-        headers: {
-            'content-type': 'application/json;charset=utf-8' 
-        }
-    };
-
-    return fetch(url, options)
+const isValid = cep =>                                                                  /* Valida o CEP em uma fonte externa */
+    fetch(url(cep), options)
         .then(response => response.json())
         .then(data => {
             if (data.erro)
-                data = { erro: 'CEP inválido'};
-            return data;
+                return false;
+            return true;
         });
-};
 
-/* Retorna se o CEP informado é válido e retorna o restante do endereço. */
-module.exports.validarCEP = input => {
-    
-    const cep = input
-        .replace(/\D/g, '');
+const validInput = cep =>                                                               /* Processo de validação do CEP informado. */
+    !isBadSizedOrRepeated(cep) && isValid(cep) || Promise.resolve(false);
 
-    return !isBadSizedOrRepeated(cep) && isValid(cep);
-};
+const formatInput = input =>                                                            /* Deixa apenas os dígitos do CEP informado. */
+    input.replace(/\D/g, '');
+
+const validateInput = compose(validInput, formatInput);
+
+module.exports.validarCEP = input =>                                                    /* Retorna se o CEP informado é válido através de uma Promise. */
+    (!input) ? Promise.resolve(false) : validateInput(input);

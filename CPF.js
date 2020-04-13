@@ -1,58 +1,44 @@
-/* Verifica se o CPF informado é longo demais ou um único dígito repetido. */
-const isBadSizedOrRepeated = input => {
+const compose = require('compose-function');
+
+const returnDigit = digit =>                                                            /* Retorna um dígito válido. */
+    (digit > 9) ? 0 : digit;
         
-    const regex = /^(\d)\1{10}/;
-    return input.length != 11 || regex.test(input);
+const digit = total =>                                                                  /* Calcula o dígito com base no total obtido para o segmento. */
+    11 - (total % 11);
 
-};
-
-/* Retorna o produto dos dígitos por sua posição. */
-const digitCalc = multiplier => (result, position) =>
+const digitCalc = multiplier => (result, position) =>                                   /* Retorna o produto dos dígitos por sua posição. */
     result + position * multiplier--;
+   
+const total = (segment, multiplier) =>                                                  /* Calcula o valor total para o segmento. */
+    segment.reduce(digitCalc(multiplier), 0);
 
-/* Retorna o dígito calculado a partir do segmento informado. */
-const segmentCalc = (segment, multiplier) => {
-    
-    let total = segment.reduce(digitCalc(multiplier), 0);
-    let digit = 11 - (total % 11);
-    return (digit > 9) ? 0 : digit;
+const segmentCalc = (segment, multiplier) =>                                            /* Retorna o dígito calculado a partir do segmento informado. */
+    compose(returnDigit, digit, total)(segment, multiplier);
 
-};
-
-/* Verifica se o segmento calculado é válido. */
-const segmentIsValid = segment => 
+const segmentIsValid = segment =>                                                       /* Verifica se o segmento calculado é válido. */
     segment.digit == segmentCalc(segment.part, segment.part.length + 1);
 
-/* Retorna se o campo do dígito verificador é válido. */
-const fieldIsValid = field => 
-    field.reduce((result, current) => result && segmentIsValid(current), true); // << Faz uma iteração desnecessára!
+const isValid = cpf =>                                                                  /* Retorna se o campo do dígito verificador é válido. */
+    cpf.reduce((result, current) =>                                                     // << Faz uma iteração desnecessára!
+        result && segmentIsValid(current), true
+    ); 
 
-/* Returna se dígito verificador informado é válido. */
-const isValid = input => {
+const part = (cpf, index) =>                                                            /* Separa o CPF em dois segmentos. */
+    ({part: cpf.substr(0, index).split(''), digit: Number(cpf.charAt(index))});
 
-    const cpf = [
-        {
-            part: input.substr(0, 9).split(''),
-            digit: Number(input.charAt(9))
-        },
-        {
-            part: input.substr(0, 10).split(''),
-            digit: Number(input.charAt(10))
-        }
-    ];
+const segment = cpf =>                                                                  /* Returna se dígito verificador informado é válido. */
+    ([part(cpf, 9),part(cpf, 10)]);
 
-    return fieldIsValid(cpf);
+const isBadSizedOrRepeated = input =>                                                   /* Verifica se o CPF informado é longo demais ou um único dígito repetido. */ 
+    input.length != 11 || /^(\d)\1{10}/.test(input);
+ 
+const validInput = cpf =>                                                               /* Faz a primeira verificação do tamanho e conteúdo do CPF informado. */
+    !isBadSizedOrRepeated(cpf) && compose(isValid, segment)(cpf);
 
-};
+const formatInput = input =>                                                            /* Mantém apenas os valores númericos do CPF informado. */
+    input.replace(/\D/g, '');
 
-/* Retorna se o CPF informado é válido. */
-module.exports.validarCPF = input => {
-    
-    if (!input)
-        return false;
+const validateInput = compose(validInput, formatInput);
 
-    const cpf = input
-        .replace(/\D/g, '');
-
-    return !isBadSizedOrRepeated(cpf) && isValid(cpf);
-};
+module.exports.validarCPF = input =>                                                    /* Retorna se o CPF informado é válido, ou falso, se nada for informado. */
+    (!input) ? false : validateInput(input);
